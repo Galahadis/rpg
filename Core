@@ -1,0 +1,723 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+
+namespace ConsoleApplication1
+{
+
+    class Program
+    {
+       
+        static void Main(string[] args)
+        {
+            //переменные героя
+            
+            string heroclass = "";
+            string heroName = "";
+            string answer = "";
+            string ability = "";
+            int creepsDie = 0;
+            bool ultimate = false;
+            int heroStrength = 5;
+            int heroAgility = 5;
+            int heroIntelligence = 5;
+            int heroExp = 0;
+            int heroExpNeed = 3;
+            int lvlGet = 0;
+            int damageDealt = 0;
+            //переменные игры
+            string centerText = "Center";
+
+            int centerX = (Console.WindowWidth / 2) - (centerText.Length / 2);
+            int centerY = (Console.WindowHeight / 2) - 1;
+            string diff = "";
+            int step = 0;
+            int color = 0;
+            int stepAbility = 0;
+            int deep = 1;
+            int stepFight = 0;
+            int gameLength = 0;
+            //переменные крипов и предметов
+            int mobHealth = 0;
+            int mobattackspeed = 0;
+            string mobName = "";
+            int mobHealthSaved = 0;
+            string[] mobsShouts = new string[5];
+            int mobsShoutsChance = 0;
+            int mobDamage = 0;
+            double creepChance = 0;
+            int meet = 0;
+            int meetCreep = 0;
+            int meetGold = 0;
+            int gold = 0;
+            int goldBonus = 0;
+            int findGold = 0;
+            int maxGoldFind = 0;
+            int minGoldFind = 0;
+            Random mobrnd = new Random();
+            // Обычные мобы для рандомайзера
+            int goblinHealth = 30;
+            int goblinattackspeed = 7;
+            int goblinHealthSaved = 0;
+            string[] goblinsShouts = new string[5] { "Аррр!", "Гррр!", "Ыыы!", "Оуррр!", "Яиик!" };
+            int goblinsShoutsChance = 0;
+            int goblinDamage = 5;
+
+            int spiderHealth = 25;
+            int spiderattackspeed = 4;
+            int spiderHealthSaved = 0;
+            string[] spidersShouts = new string[5] { "Уиип!", "Сссс!", "Шааа!", "Иуу!", "Яяяс!" };
+            int spidersShoutsChance = 0;
+            int spiderDamage = 8;
+
+            int deadHealth = 40;
+            int deadattackspeed = 4;
+            int deadHealthSaved = 0;
+            string[] deadsShouts = new string[5] { "Скрипит зубами...", "Стонет...", "Керс-норин!", "Смотрит на тебе пустыми глазницами...", "Арк-нар-кадиш!" };
+            int deadsShoutsChance = 0;
+            int deadDamage = 3;
+
+
+
+            Random meetrnd = new Random();
+
+            //начало игры....................................................................................................................................
+
+            
+            Console.WriteLine("Добро пожаловать в игру:");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(".......................................");
+            Console.WriteLine("CONSOLE ROUEGLIKE DANGER");
+            Console.WriteLine(".......................................");
+            Console.ResetColor();
+            Console.WriteLine("Описание:");
+            Console.WriteLine("Создавайте персонажа и отправляйтесь в опасное, но веселое приключение.");
+            Console.WriteLine("Сразитесь с монстрами и заработайте немного золота.");
+            Console.WriteLine(".......................................");
+            Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+            Console.ReadLine();
+            Console.Clear();
+
+            DirectoryInfo di = new DirectoryInfo("Data");
+            try
+            {
+                // Проверяем существует ли, указанная папка
+                if (di.Exists)
+                {
+                    // Если - да, сообщаем об этом
+
+                    Console.WriteLine("\nПапка Data уже существует");
+                    Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                    Console.ReadLine();
+                    Console.Clear();
+                }
+                // Если - нет, создаём её
+                else
+                {
+                    di.Create();
+                    Console.WriteLine("\nСоздание папки прошло успешно");
+                    Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                    Console.ReadLine();
+                    Console.Clear();
+                }
+            }
+            finally { }
+
+            //создание персонажа.............................................................................................................................
+
+            Console.WriteLine("Введи свое имя странник:");
+            heroName = Console.ReadLine();
+            Console.Clear();
+            do
+            {
+                Console.WriteLine("Выбери класс:");
+                Console.WriteLine("1. Воин.");
+                Console.WriteLine("2. Маг.");
+                Console.WriteLine("3. Разбойник.");
+                Console.WriteLine("...Введи цифру...");
+                heroclass = Console.ReadLine();
+                Console.Clear();
+                switch (heroclass)
+                {
+                    case "1":
+                        heroclass = "Воин";
+                        ability = "Мощный удар";
+                        heroStrength += 2;
+                        Console.WriteLine("...Ты выбрал класс: Воин...");
+                        Console.WriteLine("...Особая способность - удар головой...");
+                        step++;
+                        break;
+                    case "2":
+                        heroclass = "Маг";
+                        ability = "Огненный шар";
+                        heroIntelligence += 2;
+                        Console.WriteLine("...Ты выбрал класс: Маг...");
+                        Console.WriteLine("...Особая способность - столб пламени...");
+                        step++;
+                        break;
+                    case "3":
+                        heroclass = "Разбойник";
+                        ability = "Меткий удар";
+                        Console.WriteLine("...Ты выбрал класс: Разбойник...");
+                        Console.WriteLine("...Особая способность - невидимость...");
+                        heroAgility += 2;
+                        step++;
+                        break;
+                    default:
+                        Console.WriteLine("Я тебя не понимаю, " + heroName + ".");
+                        break;
+                }
+            } while (step == 0);
+            step = 0;
+            int heroAttackSpeed = heroAgility*2;
+            int heroHealth = 30 + heroStrength * 2;
+            int heroMana = 5 + heroIntelligence * 2;
+            int heroDamage = 5 + heroAgility * 2;
+            Console.WriteLine("...Твое здоровье равно: " + heroHealth + ".");
+            Console.WriteLine("...Твоя мана равна: " + heroMana + ".");
+            Console.WriteLine("...Твоя сила равна: " + heroStrength + ".");
+            Console.WriteLine("...Твоя ловкость равна: " + heroAgility + ".");
+            Console.WriteLine("...Твой интеллект равен: " + heroIntelligence + ".");
+
+            Console.ReadLine();
+            Console.Clear();
+            //генерация игры................................................................................................................................
+
+            Console.WriteLine("Как далеко ты готов зайти в своих приключениях, " + heroName + "?");
+            do
+            {
+                Console.WriteLine("1. Кошмар.");
+                Console.WriteLine("2. Испытание.");
+                Console.WriteLine("3. Прогулка.");
+                Console.WriteLine("...Введи цифру и выберите сложность...");
+                answer = Console.ReadLine();
+                Console.Clear();
+                switch (answer)
+                {
+
+                    case "1":
+
+                        Console.WriteLine("Да хранят тебя Боги, " + heroName + ". Приготовься.");
+                        meetCreep = meetrnd.Next(60, 80);
+                        meetGold = meetrnd.Next(10, 30);
+                        gameLength = meetrnd.Next(10,20);
+                        goldBonus = 40;
+                        step++;
+                        diff = "Кошмар";
+                        break;
+
+                    case "2":
+                        Console.WriteLine("Неплохо, " + heroName + ". Уверен, будет весело. Приготовься.");
+                        meetCreep = meetrnd.Next(50, 70);
+                        meetGold = meetrnd.Next(20, 40);
+                        gameLength = meetrnd.Next(20, 40);
+                        goldBonus = 20;
+                        diff = "Испытание";
+                        step++;
+                        break;
+
+                    case "3":
+                        Console.WriteLine("Я думал ты настроен серьезно, " + heroName + ". Надеюсь, ты справишься. Приготовься.");
+                        meetCreep = meetrnd.Next(10, 30);
+                        meetGold = meetrnd.Next(40, 60);
+                        gameLength = meetrnd.Next(10, 30);
+                        goldBonus = 5;
+                        diff = "Прогулка";
+                        step++;
+                        break;
+
+                    default:
+                        Console.WriteLine("Я тебя не понимаю, " + heroName + ".");
+                        break;
+                }
+            } while (step == 0);
+            step = 0;
+
+
+            
+            do
+            {
+                Console.WriteLine("Ты стоишь в темной пещере. Перед тобой четыре пути:");
+                Console.WriteLine("1. Прямо.");
+                Console.WriteLine("2. Налево.");
+                Console.WriteLine("3. Направо.");
+                Console.WriteLine("4. Вниз.");
+                Console.WriteLine("5. Отдохнуть.");
+                Console.WriteLine("Куда ты направишься, " + heroName + "?");
+                Console.WriteLine("...Введи цифру...");
+                //событие начато.......................................................................................................................
+                answer = Console.ReadLine();
+
+                switch (answer)
+                {
+                    case "1" or "2" or "3":
+                        meet = meetrnd.Next(10, 100);
+                        
+                        Console.Clear();
+                        creepChance = mobrnd.Next(0, 60);
+                        switch (creepChance)
+                        {
+                            case <= 20:
+                                mobDamage = goblinDamage;
+                                mobattackspeed = goblinattackspeed;
+                                mobHealth = goblinHealth;
+                                mobHealthSaved = goblinHealthSaved;
+                                mobsShouts = goblinsShouts;
+                                mobsShoutsChance = goblinsShoutsChance;
+                                mobName = "Гоблин";
+                                break;
+                            case > 20 and <= 40:
+                                mobDamage = spiderDamage;
+                                mobattackspeed = spiderattackspeed;
+                                mobHealth = spiderHealth;
+                                mobHealthSaved = spiderHealthSaved;
+                                mobsShouts = spidersShouts;
+                                mobsShoutsChance = spidersShoutsChance;
+                                mobName = "Паук";
+                                break;
+                            case > 40 and <= 60:
+                                mobattackspeed = deadattackspeed;
+                                mobDamage = deadDamage;
+                                mobHealth = deadHealth;
+                                mobHealthSaved = deadHealthSaved;
+                                mobsShouts = deadsShouts;
+                                mobsShoutsChance = deadsShoutsChance;
+                                mobName = "Мертвяк";
+                                break;
+                        }
+                        
+                        if (meet <= meetCreep)
+                        {
+                            mobHealthSaved = mobHealth;
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Из темноты на тебя бросается " + mobName);
+                            Console.ResetColor();
+                            mobsShoutsChance = meetrnd.Next(0, mobsShouts.Length);
+                            Console.WriteLine("" + mobName + ": " + mobsShouts[mobsShoutsChance]);
+                            do
+                            {
+                                if (heroHealth > 0)
+                                {
+                                    if (mobHealth > 0)
+                                    {
+                                        do
+                                        {
+                                            Console.WriteLine("...Выбери действие...");
+                                            Console.WriteLine("1. Обычный удар мечом.");
+                                            Console.WriteLine("Его скорость = ("+heroAttackSpeed+")");
+                                            Console.WriteLine("2. " + ability + ".");
+                                            Console.WriteLine("Его скорость = (" + heroAttackSpeed + ")");
+                                            answer = Console.ReadLine();
+                                            Console.Clear();
+                                            if (heroAttackSpeed<=mobattackspeed)
+                                            {
+                                                switch (answer)
+                                                {
+                                                    case "1":
+                                                        damageDealt = heroDamage;
+                                                        mobHealth -= damageDealt;
+                                                        Console.ForegroundColor = ConsoleColor.Cyan;
+                                                        Console.WriteLine("...Ты нанес удар первым...");
+                                                        Console.WriteLine("...Урон: " + damageDealt + "...");
+                                                        Console.ResetColor();
+                                                        Console.WriteLine("...У " + mobName + "а осталось:" + mobHealth + " здоровья...");
+                                                        stepAbility++;
+                                                        break;
+                                                    case "2":
+                                                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                        if (heroMana > 10)
+                                                        {
+                                                            switch (heroclass)
+                                                            {
+                                                                case "Воин":
+                                                                    damageDealt = heroDamage + heroStrength;
+                                                                    mobHealth -= damageDealt;
+                                                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                                                    Console.WriteLine("...Ты наносишь Мощный удар...");
+                                                                    Console.WriteLine("...Урон: " + damageDealt + "...");
+                                                                    Console.ResetColor();
+                                                                    Console.WriteLine("...У " + mobName + "а осталось:" + mobHealth + " здоровья...");
+                                                                    heroMana -= 10;
+                                                                    stepAbility++;
+                                                                    break;
+                                                                case "Маг":
+                                                                    damageDealt = heroIntelligence * 3;
+                                                                    mobHealth -= damageDealt;
+                                                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                                                    Console.WriteLine("...Ты запускаешь Огенный шар во врага...");
+                                                                    Console.WriteLine("...Урон: " + damageDealt + "...");
+                                                                    Console.WriteLine("...У " + mobName + "а осталось:" + mobHealth + " здоровья...");
+                                                                    heroMana -= 10;
+                                                                    stepAbility++;
+                                                                    break;
+                                                                case "Разбойник":
+                                                                    damageDealt = heroAgility * 3 + 10;
+                                                                    mobHealth -= damageDealt;
+                                                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                                                    Console.WriteLine("...Ты наносишь удар в уязвимое место, " + mobName + " слишком глуп и неповоротлив...");
+                                                                    Console.WriteLine("...Урон: " + damageDealt + "...");
+                                                                    Console.ResetColor();
+                                                                    Console.WriteLine("...У " + mobName + "а осталось:" + mobHealth + " здоровья...");
+                                                                    heroMana -= 10;
+                                                                    stepAbility++;
+                                                                    break;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.ForegroundColor = ConsoleColor.Gray;
+                                                            Console.WriteLine("На способность нехватило манны!");
+                                                            Console.ResetColor();
+                                                            stepAbility++;
+                                                        }
+                                                        break;
+                                                    case "3":
+
+                                                        break;
+                                                    default:
+                                                        Console.WriteLine("...Повтори...");
+                                                        break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                switch (answer)
+                                                {
+                                                    case "1":
+                                                        damageDealt = heroDamage;
+                                                        mobHealth -= damageDealt;
+                                                        Console.ForegroundColor = ConsoleColor.Cyan;
+                                                        Console.WriteLine("...Ты нанес удар...");
+                                                        Console.WriteLine("...Урон: " + damageDealt + "...");
+                                                        Console.ResetColor();
+                                                        Console.WriteLine("...У " + mobName + "а осталось:" + mobHealth + " здоровья...");
+                                                        stepAbility++;
+                                                        break;
+                                                    case "2":
+                                                        if (heroMana > 10)
+                                                        {
+                                                            switch (heroclass)
+                                                            {
+                                                                case "Воин":
+                                                                    damageDealt = heroDamage + heroStrength;
+                                                                    mobHealth -= damageDealt;
+                                                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                                                    Console.WriteLine("...Ты наносишь Мощный удар...");
+                                                                    Console.WriteLine("...Урон: " + damageDealt + "...");
+                                                                    Console.ResetColor();
+                                                                    Console.WriteLine("...У " + mobName + "а осталось:" + mobHealth + " здоровья...");
+                                                                    heroMana -= 10;
+                                                                    stepAbility++;
+                                                                    break;
+                                                                case "Маг":
+                                                                    damageDealt = heroIntelligence * 3;
+                                                                    mobHealth -= damageDealt;
+                                                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                                                    Console.WriteLine("...Ты запускаешь Огенный шар во врага...");
+                                                                    Console.WriteLine("...Урон: " + damageDealt + "...");
+                                                                    Console.WriteLine("...У " + mobName + "а осталось:" + mobHealth + " здоровья...");
+                                                                    heroMana -= 10;
+                                                                    stepAbility++;
+                                                                    break;
+                                                                case "Разбойник":
+                                                                    damageDealt = heroAgility * 3 + 10;
+                                                                    mobHealth -= damageDealt;
+                                                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                                                    Console.WriteLine("...Ты наносишь удар в уязвимое место, " + mobName + " слишком глуп и неповоротлив...");
+                                                                    Console.WriteLine("...Урон: " + damageDealt + "...");
+                                                                    Console.ResetColor();
+                                                                    Console.WriteLine("...У " + mobName + "а осталось:" + mobHealth + " здоровья...");
+                                                                    heroMana -= 10;
+                                                                    stepAbility++;
+                                                                    break;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.ForegroundColor = ConsoleColor.Gray;
+                                                            Console.WriteLine("На способность нехватило манны!");
+                                                            Console.ResetColor();
+                                                            stepAbility++;
+                                                        }
+                                                        break;
+                                                    case "3":
+
+                                                        break;
+                                                    default:
+                                                        Console.WriteLine("...Повтори...");
+                                                        break;
+                                                }
+                                            }
+                                            
+
+                                        } while (stepAbility <= 0);
+                                        damageDealt = 0;
+                                        stepAbility = 0;
+                                        if (mobHealth > 0)
+                                        {
+                                            damageDealt = mobDamage;
+                                            heroHealth -= damageDealt;
+                                            Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                                            Console.ReadLine();
+                                            Console.Clear();
+                                            Console.ForegroundColor = ConsoleColor.Red;
+                                            Console.WriteLine("..." + mobName + " атакует...");
+                                            mobsShoutsChance = meetrnd.Next(0, mobsShouts.Length);
+                                            Console.WriteLine(mobName + ": " + mobsShouts[mobsShoutsChance]);
+                                            Console.WriteLine("...Урон: " + damageDealt + "...");
+                                            Console.ResetColor();
+                                            Console.ForegroundColor = ConsoleColor.Green;
+                                            Console.WriteLine("...У тебя осталось:" + heroHealth + " здоровья...");
+                                            Console.ResetColor();
+                                            damageDealt = 0;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        stepFight = 1;
+
+                                    }
+                                }
+                                else
+                                {
+                                    stepFight = 1;
+                                }
+                            } while (stepFight <= 0);
+                            stepFight = 0;
+                            Console.WriteLine("Бой окончен, " + heroName + ".");
+                            mobHealth = mobHealthSaved;
+                            if (heroHealth > 0)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Ты победил.");
+                                Console.ResetColor();
+                                creepsDie++;
+                                heroExp++;
+                                Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                                Console.ReadLine();
+                                Console.Clear();
+                                if (heroExp >= heroExpNeed)
+                                {
+
+                                    //событие - увеличить уровень героя........................................................................................................
+
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.WriteLine("...Ты стал сильнее...");
+                                    Console.WriteLine("...Твое здоровье и манна полностью восстановленны...");
+
+
+                                    do
+                                    {
+                                        Console.WriteLine("Выбери храктеристику для повышения (+2):");
+                                        Console.WriteLine("1. Сила - увеличивает количество здоровья, а также влияет на урон Мощного удара воина.");
+                                        Console.WriteLine("2. Ловкость - увеличивает урон от обычных атак, а также влияет на урон Меткого удара разбойника.");
+                                        Console.WriteLine("3. Интеллект - увеличивает количество манны, а также влияет на урон Огненного шара мага.");
+                                        Console.WriteLine("...Введи цифру...");
+                                        answer = Console.ReadLine();
+                                        Console.Clear();
+                                        switch (answer)
+                                        {
+                                            case "1":
+                                                heroStrength += 2;
+                                                Console.WriteLine("...Сила повышена...");
+                                                stepAbility++;
+                                                break;
+                                            case "2":
+                                                heroAgility += 2;
+                                                Console.WriteLine("...Ловкость повышена...");
+                                                stepAbility++;
+                                                break;
+                                            case "3":
+                                                Console.WriteLine("...Интеллект повышен...");
+                                                heroIntelligence += 2;
+                                                stepAbility++;
+                                                break;
+                                            default:
+                                                Console.WriteLine("Я тебя не понимаю, " + heroName + ".");
+                                                break;
+                                        }
+                                    } while (stepAbility == 0);
+                                    stepAbility = 0;
+                                    Console.WriteLine("...Твоя сила теперь равна: " + heroStrength + ".");
+                                    Console.WriteLine("...Твоя ловкость теперь равна: " + heroAgility + ".");
+                                    Console.WriteLine("...Твой интеллект теперь равен: " + heroIntelligence + ".");
+                                    Console.ResetColor();
+                                    heroExp = 0;
+                                    lvlGet++;
+                                    heroExpNeed++;
+                                    heroAttackSpeed = heroAgility;
+                                    heroHealth = 30 + heroStrength * 2 + lvlGet * 2;
+                                    heroMana = 5 + heroIntelligence * 2 + lvlGet * 2;
+                                    heroDamage = 5 + heroAgility * 2 + lvlGet * 2;
+                                    Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                                    Console.ReadLine();
+                                    Console.Clear();
+
+                                    //событие окончено......................................................................................................................
+
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Стоит осмотреться и поискать что-нибудь ценное.");
+                            Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                            Console.ReadLine();
+                            Console.Clear();
+                        }
+                        if (heroHealth > 0)
+                        {
+                            if (meet <= meetGold)
+                            {
+                                minGoldFind = meetrnd.Next(15, 50);
+                                maxGoldFind = meetrnd.Next(minGoldFind, 100);
+                                findGold = meetrnd.Next(10, maxGoldFind) * deep + goldBonus;
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine("Ты осматриваешь сундук в пещере. Тебе повезло, " + heroName + ". Ты нашел - " + findGold + " золота!");
+                                gold += findGold;
+                                Console.WriteLine("В твоем кошельке , " + heroName + ", уже " + gold + " золота!");
+                                Console.ResetColor();
+                                Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                                Console.ReadLine();
+                                Console.Clear();
+                                step++;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Ты осматриваешь пещеру и ничего не находишь.");
+                                Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                                Console.ReadLine();
+                                Console.Clear();
+                                step++;
+
+                            }
+                        }
+                        break;
+                    case "4":
+                        //событие - увеличить сложность........................................................................................................
+
+                        deep++;
+                        goblinHealth = goblinHealth + 8 * deep;
+                        goblinDamage = goblinDamage + 3 * deep;
+                        goblinHealthSaved = goblinHealth;
+
+                        spiderHealth = spiderHealth + 5 * deep;
+                        spiderDamage = spiderDamage + 2 * deep;
+                        spiderHealthSaved = spiderHealth;
+
+                        deadHealth = deadHealth + 10 * deep;
+                        deadDamage = deadDamage + 2 * deep;
+                        deadHealthSaved = deadHealth;
+
+                        goldBonus += 30;
+
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Clear();
+                        Console.WriteLine("...Ты чувствуешь, что здесь обитают более сверепые монстры...");
+                        Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                        Console.ResetColor();
+                        Console.ReadLine();
+                        Console.Clear();
+                        break;
+                    case "5":
+                        Console.Clear();
+                        Console.WriteLine("Ты разводишь костер чтобы восстановиться после путешествия и отдохнуть.");
+                        Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                        Console.ReadLine();
+                        Console.Clear();
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("Я тебя не понимаю, " + heroName + ".");
+                        break;
+                }
+                if (heroHealth < 0)
+                {
+                    step = gameLength + 1;
+                }
+              
+
+            } while (step < gameLength);
+
+            //конец игры.........................................................................................................................................
+
+            Console.WriteLine("...ИГРА ОКОНЧЕНА...");
+            if (step > gameLength)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("...Ты мертв...");
+                Console.WriteLine("Сложность: " + diff + ".");
+                Console.WriteLine("Уровней получено: " + lvlGet + ".");
+                Console.WriteLine("Монстров убито: " + creepsDie + ".");
+                Console.WriteLine("...Нажми любую клавишу, чтобы закрыть программу...");
+                Console.ResetColor();
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.Clear();
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("...В далеке виднеется свет...");
+                Console.WriteLine("...Ты выбрался! Это победа...");
+                Console.WriteLine("Сложность: " + diff + ".");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Золото накоплено: " + gold + ".");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Монстров убито: " + creepsDie + ".");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Уровней получено: " + lvlGet + ".");
+                Console.ResetColor();
+
+                // Проверяем наличие таблицы рекордов
+                string path = @"Data\\Score.txt";
+                if (File.Exists(path))
+                {
+                    // Если - да, то сообщаем об этом
+                    Console.WriteLine("...Загружаю таблицу результатов...");
+                    Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                    Console.ReadLine();
+
+                }
+                else
+                {
+                    // Если - нет, тоже сообщаем 
+                    Console.WriteLine("...Создаю таблицу рекордов...");
+                    Console.WriteLine("...Нажми любую клавишу, чтобы продолжить...");
+                    Console.ReadLine();
+
+                }
+
+                // Записываем рекорд
+                string[] score = new string[7];
+                score[0] = "\n ///////////////////////////////////";
+                score[1] = "| Имя игрока:  " + heroName + ".";
+                score[2] = "| Сложность:  " + diff + ".";
+                score[3] = "| Уровней получено: " + lvlGet + ".";
+                score[4] = "| Золото накоплено: " + gold + ".";
+                score[5] = "| Монстров убито: " + creepsDie + ".";
+                score[6] = "\n ///////////////////////////////////";
+
+                using (StreamWriter outputFile = new StreamWriter(@"Data\\Score.txt", true))
+                {
+                    foreach (string line in score)
+                        outputFile.WriteLine(line);
+                }
+
+                // Выводим в консоль предыдущих игроков
+                string allscore = File.ReadAllText(@"Data\\Score.txt");
+                Console.WriteLine("...Все выжившие герои:...");
+                Console.WriteLine(allscore);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("...Нажми любую клавишу, чтобы закрыть программу...");
+                Console.ResetColor();
+                Console.ReadLine();
+            }
+
+        }
+    }
+}
